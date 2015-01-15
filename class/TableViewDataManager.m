@@ -196,24 +196,32 @@
 
 -(void) cacheAddHeight: (CGFloat) height forRowAtIndexPath: (NSIndexPath *) ip
 {
-    [rowHeightsCache setObject:[NSNumber numberWithFloat:height] forKey:ip];
+    NSString *key = [self cacheKeyForIndexPath:ip];
+    [rowHeightsCache setObject:[NSNumber numberWithFloat:height] forKey:key];
 }
 
 -(CGFloat) cacheGetHeightForRowAtIndexPath: (NSIndexPath *) ip
 {
-    id o = [rowHeightsCache objectForKey:ip];
+    NSString *key = [self cacheKeyForIndexPath:ip];
+    id o = [rowHeightsCache objectForKey:key];
     
     return (o) ? [o floatValue] : -1;
 }
 
 -(void) cacheDeleteElementAtIndexPath: (NSIndexPath *) ip
 {
-    [rowHeightsCache removeObjectForKey:ip];
+    NSString *key = [self cacheKeyForIndexPath:ip];
+    [rowHeightsCache removeObjectForKey:key];
 }
 
 -(void) cacheEmpty
 {
     [rowHeightsCache removeAllObjects];
+}
+
+-(NSString *) cacheKeyForIndexPath: (NSIndexPath *) ip
+{
+    return [NSString stringWithFormat:@"%ld-%ld", ip.section, ip.row];
 }
 
 
