@@ -28,6 +28,7 @@
 
 -(NSInteger) sections;
 -(NSInteger) rowsInSection:(NSInteger) section;
+-(BOOL) isEmpty;
 
 
 #pragma mark - DATAS
@@ -46,6 +47,9 @@
 -(NSObject *) objectAtIndexPath: (NSIndexPath *) indexPath;
 -(NSMutableArray *) objectsInSection:(NSInteger) section;
 
+-(NSIndexPath *) indexPathOfObject: (NSObject *) o;
+-(NSIndexPath *) indexPathOfObject: (NSObject *) o InSection: (NSInteger) section;
+
 #pragma mark - CACHE
 
 -(void) cacheAddHeight: (CGFloat) height forRowAtIndexPath: (NSIndexPath *) ip;
@@ -56,5 +60,6 @@
 #pragma mark - TABLE VIEW UTILS
 
 -(id) dequeueCellWithIdentifier: (NSString *) cellIdentifier andRegisterIfNeededInTableView: (UITableView *) tableView;
+-(BOOL) utilsIsLastRowVisible: (UITableView *) tableView;
 
 @end
