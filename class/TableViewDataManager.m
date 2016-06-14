@@ -62,6 +62,16 @@
     return [[self objectsInSection:section] count];
 }
 
+-(BOOL) isEmpty
+{
+    for(NSInteger i=0; i<[self sections]; i++)
+    {
+        if([self rowsInSection:i] > 0) { return NO; }
+    }
+    
+    return YES;
+}
+
 
 #pragma mark - DATAS
 
@@ -83,10 +93,12 @@
 
 -(NSArray *) addObjects: (NSMutableArray *) objects inSection: (NSInteger) section
 {
+    
     NSNumber *key = [self utilsKeyForSection:section];
     NSMutableArray *a = [datas objectForKey:key];
     
     if(!a) { a = [NSMutableArray array]; }
+    if(![objects count]) { objects = [NSMutableArray array]; }
     
     NSInteger lastOldRow = [a count];
     
@@ -122,13 +134,14 @@
 {
     NSNumber *key = [self utilsKeyForSection:section];
     NSMutableArray *a = [datas objectForKey:key];
-    NSInteger lastRow = [a count];
+    
+    NSInteger index = [a indexOfObject:obj];
+    
+    if(index == NSNotFound) { return nil; }
     
     [a removeObject:obj];
     
-    if([a count] < 1) { [self removeObjectsfromSection:section]; }
-    
-    return [NSIndexPath indexPathForRow:lastRow inSection:section];
+    return [NSIndexPath indexPathForRow:index inSection:section];
 }
 
 -(NSArray *) removeObjectsfromSection: (NSInteger) section
@@ -176,6 +189,29 @@
 }
 
 
+-(NSIndexPath *) indexPathOfObject: (NSObject *) o
+{
+    for(NSNumber *key in [datas allKeys])
+    {
+        NSIndexPath *indexPath = [self indexPathOfObject:o InSection:key.integerValue];
+        if(indexPath != nil) { return indexPath; }
+    }
+    
+    return nil;
+}
+
+
+-(NSIndexPath *) indexPathOfObject: (NSObject *) o InSection: (NSInteger) section
+{
+    NSNumber *key = [self utilsKeyForSection:section];
+    NSMutableArray *a = [datas objectForKey:key];
+    NSInteger row = [a indexOfObject:o];
+    
+    if(row == NSNotFound) { return nil; }
+    
+    return [NSIndexPath indexPathForRow:row inSection:section];
+}
+
 
 -(NSObject *) objectAtIndexPath: (NSIndexPath *) indexPath
 {
@@ -188,7 +224,7 @@
 {
     NSNumber *key = [self utilsKeyForSection:section];
     NSMutableArray *a = [datas objectForKey:key];
-    return (a) ? a : [NSMutableArray array];
+    return (a != nil) ? a : [NSMutableArray array];
 }
 
 
@@ -263,6 +299,22 @@
     }
     
     return sub;
+}
+
+-(BOOL) utilsIsLastRowVisible: (UITableView *) tableView
+{
+    NSArray *indexes = [tableView indexPathsForVisibleRows];
+    
+    NSInteger lastSection = [self sections]-1;
+    NSInteger lastRow = [self rowsInSection:lastSection];
+    
+    for (NSIndexPath *index in indexes)
+    {
+        if(index.section != lastSection) { continue; }
+        if(index.row == lastRow-1) { return YES; }
+    }
+    
+    return NO;
 }
 
 
